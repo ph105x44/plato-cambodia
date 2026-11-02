@@ -207,6 +207,19 @@ label.consent a{color:var(--accent);text-underline-offset:3px}
 @media(max-width:640px){.offer-cta{padding:1.4rem}.offer-cta .btn{width:100%}}
 .dest-price small{display:block;margin-top:.35rem;font-size:.95rem;letter-spacing:0;opacity:.78}
 .dests-note{margin:18px 4px 0;font-size:.82rem;color:var(--muted)}
+/* market facts */
+.mfacts-hero{position:relative;margin:0 0 20px;border-radius:32px;overflow:hidden;aspect-ratio:21/9;background:#1b2238}
+.mfacts-hero img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 55%}
+.mfacts-hero figcaption{position:absolute;left:16px;bottom:16px;background:#fff;color:var(--accent);padding:8px 13px;border-radius:50px;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;line-height:1.2}
+.mfacts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.mfact{background:var(--soft);border-radius:24px;padding:1.6rem 1.5rem;display:flex;flex-direction:column;gap:.55rem;min-width:0}
+.mfact b{font-size:clamp(2rem,3.2vw,2.8rem);font-weight:400;line-height:1.05;letter-spacing:-.03em;color:var(--accent)}
+.mfact h3{font-size:1.1rem;line-height:1.3}
+.mfact p{margin:0;color:var(--muted);font-size:.93rem;line-height:1.55}
+.mfact small{margin-top:auto;padding-top:.6rem;color:var(--muted);font-size:.78rem;opacity:.85}
+.mfact.hot{background:#1c2340;color:#fff}.mfact.hot b{color:#fff}.mfact.hot p,.mfact.hot small{color:rgba(255,255,255,.78)}
+@media(max-width:980px){.mfacts{grid-template-columns:repeat(2,minmax(0,1fr))}.mfacts-hero{aspect-ratio:16/9}}
+@media(max-width:640px){.mfacts{grid-template-columns:minmax(0,1fr)}.mfacts-hero{aspect-ratio:4/3;border-radius:24px}}
 /* primary CTA: flat, quiet, premium */
 .btn{border-radius:6px;min-height:58px;padding:0 30px;gap:1.1rem;font-size:.95rem;font-weight:400;letter-spacing:.02em;transition:background-color .25s ease,color .25s ease,border-color .25s ease;transform:none!important}
 .btn.pulse{--ink-btn:#1c2340;position:relative;background:var(--ink-btn);color:#fff;border:1px solid var(--ink-btn);box-shadow:none;animation:none}
@@ -393,6 +406,23 @@ html{scroll-behavior:auto}
           <h3>Рассрочка без процентов</h3>
           <p>Часть застройщиков делит платёж на несколько лет без процентов, а остаток при сдаче можно оформить через финансирование застройщика. Условия зависят от проекта.</p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="mfacts">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Рынок Камбоджи</p>
+        <h2>Почему инвесторы обращают внимание на Камбоджу?</h2>
+        <p class="lede">Страна развивается, привлекает международный капитал и инвестирует в инфраструктуру. Разбираем факторы, которые делают Камбоджу интересным направлением для изучения рынка недвижимости.</p>
+      </div>
+      <figure class="mfacts-hero"><img src="img/phnom-penh-night.jpg" width="1800" height="1199" alt="Панорама Пномпеня в сумерках" loading="lazy"><figcaption>Пномпень</figcaption></figure>
+      <div class="mfacts">
+        <div class="mfact"><b>+$10 млрд</b><h3>Инвестиционные проекты в 2025 году</h3><p>Камбоджа одобрила 630 инвестиционных проектов общей стоимостью около $10 млрд. Это на 45% больше, чем годом ранее. Речь именно об одобренных проектах, а не о фактически поступивших деньгах.</p><small>Источник: Cambodian Investment Board (CIB)</small></div>
+        <div class="mfact"><b>$5,1 млрд</b><h3>Прямые иностранные инвестиции</h3><p>По данным Всемирного банка, приток FDI в 2025 году вырос на 15% и достиг $5,1 млрд.</p><small>Источник: World Bank Group</small></div>
+        <div class="mfact"><b>Новый аэропорт</b><h3>Развитие транспортной инфраструктуры</h3><p>Международный аэропорт Techo International Airport возле Пномпеня открылся в сентябре 2025 года. Это важный инфраструктурный проект страны.</p><small>Источник: Travel and Tourism</small></div>
+        <div class="mfact hot"><b>+650%</b><h3>Рост интереса россиян к недвижимости</h3><p>По данным Prian.ru, количество запросов о недвижимости Камбоджи от пользователей из России выросло на 650% за 2025 год относительно 2024-го. Это интерес аудитории портала, а не рост цен или продаж.</p><small>Источник: Prian.ru</small></div>
       </div>
     </div>
   </section>
