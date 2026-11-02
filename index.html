@@ -197,6 +197,14 @@ label.consent a{color:var(--accent);text-underline-offset:3px}
 .hdr-contacts .ico-wa::before{background:#1faa59}
 @media(max-width:1100px){.header .toplink{display:none}.hdr-contacts{margin-left:auto}}
 @media(max-width:720px){.hdr-contacts{gap:8px}.hdr-contacts a{width:42px;padding:0;justify-content:center;font-size:0;gap:0}.hdr-contacts a::before{width:20px;height:20px}}
+/* offer steps */
+.adv-item .num{font-size:.85rem;letter-spacing:.14em;color:var(--accent);font-variant-numeric:lining-nums}
+.adv-item{padding:1.7rem 1.6rem;gap:.7rem}
+.adv-item p{line-height:1.55}
+.offer-cta{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1.2rem 2rem;margin-top:20px;padding:1.8rem 2rem;border:1px solid var(--line);border-radius:24px}
+.offer-cta h3{font-size:1.4rem;font-weight:400;line-height:1.25}
+.offer-cta p{margin:.35rem 0 0;color:var(--muted)}
+@media(max-width:640px){.offer-cta{padding:1.4rem}.offer-cta .btn{width:100%}}
 /* primary CTA: flat, quiet, premium */
 .btn{border-radius:6px;min-height:58px;padding:0 30px;gap:1.1rem;font-size:.95rem;font-weight:400;letter-spacing:.02em;transition:background-color .25s ease,color .25s ease,border-color .25s ease;transform:none!important}
 .btn.pulse{--ink-btn:#1c2340;position:relative;background:var(--ink-btn);color:#fff;border:1px solid var(--ink-btn);box-shadow:none;animation:none}
@@ -286,26 +294,19 @@ html{scroll-behavior:auto}
   <section class="band" id="offer">
     <div class="wrap">
       <div class="section-head">
-        <p class="eyebrow">Бесплатно</p>
-        <h2>Что вы получите</h2>
+        <p class="eyebrow">Plato Estate</p>
+        <h2>Подберём недвижимость под ваши цели и бюджет</h2>
+        <p class="lede">Поможем разобраться в рынке Камбоджи, сравнить проекты и выбрать подходящий вариант для жизни или инвестиций.</p>
       </div>
       <div class="adv">
-        <div class="adv-item">
-          <h3>Консультация специалиста</h3>
-          <p>Специалист по недвижимости Камбоджи разберёт вашу цель и ответит на вопросы о покупке.</p>
-        </div>
-        <div class="adv-item">
-          <h3>Подборка актуальных объектов</h3>
-          <p>Цена, расположение и условия покупки по каждому проекту.</p>
-        </div>
-        <div class="adv-item">
-          <h3>Учёт вашего бюджета</h3>
-          <p>Покажем то, что подходит по сумме и способу оплаты.</p>
-        </div>
-        <div class="adv-item">
-          <h3>Сравнение вариантов</h3>
-          <p>Поможем сравнить инвестиционные возможности: районы, сроки сдачи, условия рассрочки.</p>
-        </div>
+        <div class="adv-item"><span class="num">01</span><h3>Консультация специалиста</h3><p>Обсудим ваши цели, бюджет и пожелания. Ответим на вопросы о рынке недвижимости Камбоджи.</p></div>
+        <div class="adv-item"><span class="num">02</span><h3>Подборка проектов</h3><p>Подберём актуальные объекты с учётом бюджета, расположения и предпочтений.</p></div>
+        <div class="adv-item"><span class="num">03</span><h3>Расчёт стоимости покупки</h3><p>Покажем цены, размер первоначального взноса, график платежей и дополнительные расходы.</p></div>
+        <div class="adv-item"><span class="num">04</span><h3>Сравнение и оценка проектов</h3><p>Сопоставим условия покупки, сроки сдачи, тип собственности и возможности аренды.</p></div>
+      </div>
+      <div class="offer-cta">
+        <div><h3>Найдём подходящий вариант вместе</h3><p>Расскажите, какую недвижимость вы ищете, — подготовим подборку под ваш запрос.</p></div>
+        <a class="btn pulse" href="#quiz" data-go>Получить подборку объектов</a>
       </div>
     </div>
   </section>
