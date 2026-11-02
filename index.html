@@ -151,6 +151,10 @@ details[open] summary::after{content:"\2212"}
 details p{margin:0 0 1.3rem;color:var(--muted);max-width:40rem}
 details ul{margin:0 0 1.3rem;padding-left:1.25rem;color:var(--muted);max-width:40rem}
 details li{margin-bottom:.55rem}details li::marker{color:var(--accent)}
+label.consent{display:flex;gap:.75rem;align-items:flex-start;font-size:13px;line-height:1.45;color:var(--muted);cursor:pointer}
+label.consent input{flex:none;width:20px;height:20px;min-height:0;margin:1px 0 0;padding:0;accent-color:var(--accent)}
+label.consent a{color:var(--accent);text-underline-offset:3px}
+.foot-legal{display:flex;flex-wrap:wrap;gap:.4rem 1.5rem}.foot-legal a{text-underline-offset:3px}
 
 /* closing and footer */
 .closing{padding-block:clamp(1.5rem,3vw,2.5rem)}
@@ -446,6 +450,7 @@ html{scroll-behavior:auto}
 <footer>
   <div class="wrap" style="padding-inline:max(20px,env(safe-area-inset-left,0px))">
     <div class="foot-line"><strong>Plato Estate</strong><span>Агентство недвижимости в Юго-Восточной Азии</span><span>Telegram: <a href="https://t.me/platoestate" target="_blank" rel="noopener noreferrer">@platoestate</a> · WhatsApp и телефон: <a href="https://wa.me/85511730787" target="_blank" rel="noopener noreferrer">+855 11 730 787</a></span></div>
+    <p class="foot-legal"><a href="privacy.html">Политика конфиденциальности</a><a href="consent.html">Согласие на обработку персональных данных</a></p>
     <p>Информация носит справочный характер и не является публичной офертой или инвестиционной рекомендацией. Цены и сроки ориентировочные и могут меняться. Доходность недвижимости не гарантируется.</p>
   </div>
 </footer>
@@ -655,6 +660,7 @@ html{scroll-behavior:auto}
         '<label for="q-contact">Телефон или ник в мессенджере <small>Например, +7 999 123-45-67 или @username. Так специалист сможет с вами связаться.</small><input id="q-contact" name="contact" type="text" autocomplete="off" maxlength="120" required></label>' +
         '<input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />' +
         '<p class="err" id="q-err" role="alert" hidden>Введите имя, чтобы специалист знал, как к вам обращаться.</p>' +
+        '<label class="consent" for="q-consent"><input type="checkbox" id="q-consent" name="consent" required><span>Я согласен на <a href="consent.html" target="_blank" rel="noopener">обработку персональных данных</a> и ознакомлен с <a href="privacy.html" target="_blank" rel="noopener">политикой конфиденциальности</a></span></label>' +
         '<button class="btn" type="submit">Получить подборку</button>';
       root.append(form);
       var nameInput = form.querySelector('#q-name');
@@ -670,6 +676,13 @@ html{scroll-behavior:auto}
           err.textContent = 'Введите имя, чтобы специалист знал, как к вам обращаться.';
           err.hidden = false;
           nameInput.focus();
+          return;
+        }
+        var consentBox = form.querySelector('#q-consent');
+        if (!consentBox || !consentBox.checked) {
+          err.textContent = 'Чтобы отправить заявку, нужно согласие на обработку персональных данных.';
+          err.hidden = false;
+          if (consentBox) consentBox.focus();
           return;
         }
         if (c.replace(/[\s\-().]/g, '').length < 5) {
@@ -694,6 +707,7 @@ html{scroll-behavior:auto}
           name: state.name,
           contact: state.contact,
           website: (form.querySelector('[name=website]') || {}).value || '',
+          consent: true,
           elapsed: Date.now() - (state.formAt || Date.now()),
           answers: Q.map(function (qq, idx) { return { q: qq.label, a: state.answers[idx] || '' }; }),
           utm: utm,

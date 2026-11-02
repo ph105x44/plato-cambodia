@@ -96,6 +96,7 @@ module.exports = async (req, res) => {
 
   const name = clean(b.name, 80);
   const contact = clean(b.contact, 120);
+  if (b.consent !== true) return res.status(422).json({ ok: false, error: 'consent' });
   if (name.length < 2 || contact.replace(/[\s\-().]/g, '').length < 5) {
     return res.status(422).json({ ok: false, error: 'invalid' });
   }
@@ -109,6 +110,7 @@ module.exports = async (req, res) => {
     if (a && a.q) lines.push(`${clean(a.q, 60)}: ${clean(a.a, 120) || 'не указано'}`);
   });
   lines.push('', `Имя: ${name}`, `Контакт: ${contact}`);
+  lines.push(`Согласие на обработку персональных данных: дано, ${new Date().toISOString()}`);
   const utm = b.utm && typeof b.utm === 'object' ? b.utm : {};
   const utmLine = Object.keys(utm).slice(0, 12).map((k) => `${clean(k, 30)}=${clean(utm[k], 100)}`).join(', ');
   if (utmLine) lines.push(`Метки: ${utmLine}`);
