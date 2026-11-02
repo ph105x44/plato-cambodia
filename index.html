@@ -504,9 +504,11 @@ html{scroll-behavior:auto}
 
     if (state.done) {
       var msg = buildMessage();
-      h = el('h3', 'qtitle', 'Ответы готовы');
+      h = el('h3', 'qtitle', state.sent ? 'Заявка отправлена' : 'Ответы готовы');
       root.append(h);
-      root.append(el('p', 'lede', 'Осталось отправить их специалисту. Выберите, где удобнее: Telegram или WhatsApp. Откроется чат с готовым сообщением, в нём нужно нажать «Отправить».'));
+      root.append(el('p', 'lede', state.sent
+        ? 'Специалист свяжется с вами по указанному контакту. Чтобы получить ответ быстрее, можно сразу написать нам в Telegram или WhatsApp: ваши ответы уже подставлены в сообщение.'
+        : 'Осталось отправить их специалисту. Выберите, где удобнее: Telegram или WhatsApp. Откроется чат с готовым сообщением, в нём нужно нажать «Отправить».'));
 
       var dl = el('dl', 'summary');
       Q.forEach(function (q, idx) {
@@ -571,6 +573,7 @@ html{scroll-behavior:auto}
       edit.type = 'button';
       edit.addEventListener('click', function () {
         state.done = false;
+        state.sent = false;
         state.step = 0;
         renderQuiz(true);
       });
@@ -610,6 +613,7 @@ html{scroll-behavior:auto}
       }
 
     } else {
+      state.formAt = state.formAt || Date.now();
       root.append(el('p', 'eyebrow', 'Последний шаг'));
       h = el('h3', 'qtitle', 'Как вас зовут и как с вами связаться?');
       root.append(h);
@@ -617,8 +621,9 @@ html{scroll-behavior:auto}
       form.innerHTML =
         '<label for="q-name">Имя<input id="q-name" name="name" type="text" autocomplete="given-name" maxlength="80" required></label>' +
         '<label for="q-contact">Телефон или ник в мессенджере <small>Например, +7 999 123-45-67 или @username. Так специалист сможет с вами связаться.</small><input id="q-contact" name="contact" type="text" autocomplete="off" maxlength="120" required></label>' +
+        '<input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />' +
         '<p class="err" id="q-err" role="alert" hidden>Введите имя, чтобы специалист знал, как к вам обращаться.</p>' +
-        '<button class="btn" type="submit">Подготовить ответы</button>';
+        '<button class="btn" type="submit">Получить подборку</button>';
       root.append(form);
       var nameInput = form.querySelector('#q-name');
       var contactInput = form.querySelector('#q-contact');
@@ -642,9 +647,39 @@ html{scroll-behavior:auto}
           return;
         }
         state.name = n.slice(0, 80);
-        state.contact = contactInput.value.trim().slice(0, 120);
-        state.done = true;
-        renderQuiz(true);
+        state.contact = c.slice(0, 120);
+        var submitBtn = form.querySelector('button[type=submit]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Отправляем…';
+        err.hidden = true;
+        var utm = {};
+        try {
+          new URLSearchParams(location.search).forEach(function (v, k) {
+            if (/^(utm_|yclid|ysclid|gclid|fbclid|_openstat)/i.test(k)) utm[k] = v;
+          });
+        } catch (e2) { /* ignore */ }
+        var payload = {
+          name: state.name,
+          contact: state.contact,
+          website: (form.querySelector('[name=website]') || {}).value || '',
+          elapsed: Date.now() - (state.formAt || Date.now()),
+          answers: Q.map(function (qq, idx) { return { q: qq.label, a: state.answers[idx] || '' }; }),
+          utm: utm,
+          referrer: document.referrer || ''
+        };
+        var finish = function (ok) {
+          state.sent = ok;
+          state.done = true;
+          renderQuiz(true);
+        };
+        fetch('/api/lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+          .then(function (r) { return r.ok ? r.json().catch(function () { return { ok: true }; }) : { ok: false, status: r.status }; })
+          .then(function (j) {
+            if (j && j.ok) { finish(true); return; }
+            if (j && j.status === 422) { err.textContent = 'Проверьте имя и контакт и попробуйте ещё раз.'; err.hidden = false; submitBtn.disabled = false; submitBtn.textContent = 'Получить подборку'; return; }
+            finish(false);
+          })
+          .catch(function () { finish(false); });
       });
       var back2 = el('button', 'linkbtn', '← Назад');
       back2.type = 'button';
