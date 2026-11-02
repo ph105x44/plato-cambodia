@@ -181,14 +181,18 @@ label.consent a{color:var(--accent);text-underline-offset:3px}
 .dest-3 .dest-photo{margin:12px 12px 0;border-radius:24px;aspect-ratio:4/3.1}
 @media(max-width:980px){.dests{grid-template-columns:minmax(0,1fr);max-width:560px}.dest-2{min-height:480px}}
 @media(prefers-reduced-motion:reduce){.dest img{transition:none}.dest:hover img{transform:none}}
-@keyframes ctaPulse{0%{box-shadow:0 0 0 0 var(--ring,rgba(79,96,153,.5))}70%{box-shadow:0 0 0 16px rgba(79,96,153,0)}100%{box-shadow:0 0 0 0 rgba(79,96,153,0)}}
-@keyframes ctaShine{0%,55%{transform:translateX(-140%) skewX(-20deg)}100%{transform:translateX(380%) skewX(-20deg)}}
-.btn.pulse{position:relative;overflow:hidden;animation:ctaPulse 2.4s ease-out infinite}
-.btn.pulse::after{content:"";position:absolute;top:0;left:0;width:35%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);animation:ctaShine 3.6s ease-in-out infinite;pointer-events:none}
-.btn.pulse.alt{--ring:rgba(255,255,255,.55)}
-.btn.pulse.alt::after{background:linear-gradient(90deg,transparent,rgba(79,96,153,.22),transparent)}
-.btn.pulse:hover,.btn.pulse:focus-visible{animation-play-state:paused}
-@media(prefers-reduced-motion:reduce){.btn.pulse,.btn.pulse::after{animation:none!important}}
+/* primary CTA: flat, quiet, premium */
+.btn{border-radius:6px;min-height:58px;padding:0 30px;gap:1.1rem;font-size:.95rem;font-weight:400;letter-spacing:.02em;transition:background-color .25s ease,color .25s ease,border-color .25s ease;transform:none!important}
+.btn.pulse{--ink-btn:#1c2340;position:relative;background:var(--ink-btn);color:#fff;border:1px solid var(--ink-btn);box-shadow:none;animation:none}
+.btn.pulse::after{content:"";flex:none;width:22px;height:10px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 10' fill='none' stroke='black' stroke-width='1.2'%3E%3Cpath d='M0 5h21M17 1l4 4-4 4'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 10' fill='none' stroke='black' stroke-width='1.2'%3E%3Cpath d='M0 5h21M17 1l4 4-4 4'/%3E%3C/svg%3E") center/contain no-repeat;position:static;inset:auto;animation:none;transition:transform .3s ease}
+.btn.pulse:hover,.btn.pulse:focus-visible{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.pulse:hover::after,.btn.pulse:focus-visible::after{transform:translateX(5px)}
+.btn.pulse:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.btn.pulse.alt{background:#fff;color:var(--ink-btn);border-color:#fff}
+.btn.pulse.alt:hover,.btn.pulse.alt:focus-visible{background:var(--soft);border-color:var(--soft);color:var(--ink-btn)}
+.btn.ghost{border-radius:6px}
+@media(max-width:640px){.btn.pulse{justify-content:space-between}}
+@media(prefers-reduced-motion:reduce){.btn.pulse::after{transition:none}.btn.pulse:hover::after{transform:none}}
 .foot-legal{display:flex;flex-wrap:wrap;gap:.4rem 1.5rem}.foot-legal a{text-underline-offset:3px}
 
 /* closing and footer */
