@@ -188,6 +188,15 @@ label.consent a{color:var(--accent);text-underline-offset:3px}
 .btn.ghost.ico-wa::before{background:#1faa59}
 .btn.ghost.ico-tg::before{background:#229ed9}
 .btn.ghost.ico-wa:hover::before,.btn.ghost.ico-tg:hover::before{opacity:.9}
+/* header contacts */
+.hdr-contacts{display:flex;align-items:center;gap:10px;margin-left:12px}
+.hdr-contacts a{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 16px;border:1px solid var(--line);border-radius:6px;font-size:14px;color:var(--ink);text-decoration:none;transition:border-color .2s,color .2s}
+.hdr-contacts a:hover{border-color:var(--accent);color:var(--accent)}
+.hdr-contacts a::before{width:18px;height:18px}
+.hdr-contacts .ico-tg::before{background:#229ed9}
+.hdr-contacts .ico-wa::before{background:#1faa59}
+@media(max-width:1100px){.header .toplink{display:none}.hdr-contacts{margin-left:auto}}
+@media(max-width:720px){.hdr-contacts{gap:8px}.hdr-contacts a{width:42px;padding:0;justify-content:center;font-size:0;gap:0}.hdr-contacts a::before{width:20px;height:20px}}
 /* primary CTA: flat, quiet, premium */
 .btn{border-radius:6px;min-height:58px;padding:0 30px;gap:1.1rem;font-size:.95rem;font-weight:400;letter-spacing:.02em;transition:background-color .25s ease,color .25s ease,border-color .25s ease;transform:none!important}
 .btn.pulse{--ink-btn:#1c2340;position:relative;background:var(--ink-btn);color:#fff;border:1px solid var(--ink-btn);box-shadow:none;animation:none}
@@ -233,6 +242,7 @@ html{scroll-behavior:auto}
     </a>
     <span class="header-caption">Недвижимость<br>в Камбодже</span>
     <a class="toplink" href="#quiz" data-go>Получить подборку объектов</a>
+    <div class="hdr-contacts"><a class="ico-tg" href="https://t.me/platoestate" target="_blank" rel="noopener noreferrer" aria-label="Telegram">Telegram</a><a class="ico-wa" href="https://wa.me/85511730787" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">WhatsApp</a></div>
   </div>
 </header>
 <section class="hero">
@@ -246,7 +256,6 @@ html{scroll-behavior:auto}
           <p class="eyebrow">Вопрос 1 из 5 · около 2-х минут</p>
           <h2 class="qtitle" id="hq">Для чего вы рассматриваете недвижимость в Камбодже?</h2>
           <div class="opts" id="heroOpts"></div>
-          <p class="note">Остальные 4 вопроса откроются следом.</p>
         </aside>
       </div>
       <figure class="hero-visual">
