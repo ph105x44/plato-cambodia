@@ -205,6 +205,8 @@ label.consent a{color:var(--accent);text-underline-offset:3px}
 .offer-cta h3{font-size:1.4rem;font-weight:400;line-height:1.25}
 .offer-cta p{margin:.35rem 0 0;color:var(--muted)}
 @media(max-width:640px){.offer-cta{padding:1.4rem}.offer-cta .btn{width:100%}}
+.dest-price small{display:block;margin-top:.35rem;font-size:.95rem;letter-spacing:0;opacity:.78}
+.dests-note{margin:18px 4px 0;font-size:.82rem;color:var(--muted)}
 /* primary CTA: flat, quiet, premium */
 .btn{border-radius:6px;min-height:58px;padding:0 30px;gap:1.1rem;font-size:.95rem;font-weight:400;letter-spacing:.02em;transition:background-color .25s ease,color .25s ease,border-color .25s ease;transform:none!important}
 .btn.pulse{--ink-btn:#1c2340;position:relative;background:var(--ink-btn);color:#fff;border:1px solid var(--ink-btn);box-shadow:none;animation:none}
@@ -343,7 +345,7 @@ html{scroll-behavior:auto}
           <div class="dest-body">
             <h3>Пномпень — центральные районы</h3>
             <p>Апартаменты в деловом центре столицы, рядом с международными школами, посольствами, ресторанами и городской инфраструктурой.</p>
-            <div class="dest-foot"><span class="dest-price">от 45 000 $</span><button class="btn ghost" type="button" data-loc="Пномпень, центр">Подобрать в этом районе</button></div>
+            <div class="dest-foot"><span class="dest-price">от 45 000 $<small>≈ 3,6 млн ₽</small></span><button class="btn ghost" type="button" data-loc="Пномпень, центр">Подобрать в этом районе</button></div>
           </div>
         </article>
         <article class="dest dest-2">
@@ -352,7 +354,7 @@ html{scroll-behavior:auto}
           <div class="dest-body">
             <h3>Кох Нореа — набережная Меконга</h3>
             <p>Современные жилые комплексы на острове рядом с Кох Пич. Апартаменты с 1–3 спальнями и возможностью беспроцентной рассрочки.</p>
-            <div class="dest-foot"><span class="dest-price">от 63 000 $</span><button class="btn ghost" type="button" data-loc="Пномпень, у реки">Подобрать в этом районе</button></div>
+            <div class="dest-foot"><span class="dest-price">от 63 000 $<small>≈ 5,1 млн ₽</small></span><button class="btn ghost" type="button" data-loc="Пномпень, у реки">Подобрать в этом районе</button></div>
           </div>
         </article>
         <article class="dest dest-3">
@@ -360,10 +362,11 @@ html{scroll-behavior:auto}
           <div class="dest-body">
             <h3>Сиануквиль — первая линия моря</h3>
             <p>Апартаменты у пляжа Отрес с балконами и видом на море. В некоторых проектах доступна рассрочка с первоначальным взносом от 20%.</p>
-            <div class="dest-foot"><span class="dest-price">от 43 500 $</span><button class="btn ghost" type="button" data-loc="Сиануквиль, у моря">Подобрать в этом районе</button></div>
+            <div class="dest-foot"><span class="dest-price">от 43 500 $<small>≈ 3,5 млн ₽</small></span><button class="btn ghost" type="button" data-loc="Сиануквиль, у моря">Подобрать в этом районе</button></div>
           </div>
         </article>
       </div>
+      <p class="dests-note">Суммы в рублях приблизительные, рассчитаны по курсу Банка России (около 81 ₽ за доллар). Точная цена зависит от проекта и курса на день оплаты.</p>
     </div>
   </section>
 
@@ -379,7 +382,7 @@ html{scroll-behavior:auto}
           <p>Квартиры в многоквартирных домах оформляются по праву стратового титула. Первые этажи иностранцам не продаются.</p>
         </div>
         <div class="fact">
-          <h3>Вход от 45 000 $</h3>
+          <h3>Вход от 45 000 $ (≈ 3,6 млн ₽)</h3>
           <p>Однокомнатные апартаменты в проектах подборки начинаются примерно с этой суммы. Итог зависит от города, этажа и планировки.</p>
         </div>
         <div class="fact">
@@ -533,7 +536,7 @@ html{scroll-behavior:auto}
     { label: 'Цель', q: 'Для чего вы рассматриваете недвижимость в Камбодже?',
       o: ['Для сдачи в аренду', 'Для сохранения капитала', 'Для себя и отдыха', 'Пока изучаю рынок'] },
     { label: 'Бюджет', q: 'Какой бюджет вы рассматриваете?',
-      o: ['До 60 000 $', '60 000 – 100 000 $', '100 000 – 200 000 $', 'От 200 000 $'] },
+      o: ['До 60 000 $ (≈ 4,9 млн ₽)', '60 000 – 100 000 $ (≈ 4,9–8,1 млн ₽)', '100 000 – 200 000 $ (≈ 8,1–16,2 млн ₽)', 'От 200 000 $ (≈ 16,2 млн ₽)'] },
     { label: 'Расположение', q: 'Какое расположение вам интересно?',
       o: ['Пномпень, центр', 'Пномпень, у реки', 'Сиануквиль, у моря', 'Пока не определился'] },
     { label: 'Оплата', q: 'Как планируете оплачивать?',
