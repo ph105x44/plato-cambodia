@@ -722,6 +722,14 @@ html{scroll-behavior:auto}
           referrer: document.referrer || ''
         };
         var finish = function (ok) {
+          if (ok) {
+            try {
+              sessionStorage.setItem('platoLead', '1');
+              sessionStorage.setItem('platoMsg', buildMessage());
+            } catch (e3) { /* ignore */ }
+            window.location.assign('thanks.html');
+            return;
+          }
           state.sent = ok;
           state.done = true;
           renderQuiz(true);
