@@ -616,7 +616,7 @@ html{scroll-behavior:auto}
       var form = document.createElement('form');
       form.innerHTML =
         '<label for="q-name">Имя<input id="q-name" name="name" type="text" autocomplete="given-name" maxlength="80" required></label>' +
-        '<label for="q-contact">Телефон или ник в мессенджере <small>Необязательно. Укажите, если удобнее, чтобы специалист написал первым.</small><input id="q-contact" name="contact" type="text" autocomplete="off" maxlength="120"></label>' +
+        '<label for="q-contact">Телефон или ник в мессенджере <small>Например, +7 999 123-45-67 или @username. Так специалист сможет с вами связаться.</small><input id="q-contact" name="contact" type="text" autocomplete="off" maxlength="120" required></label>' +
         '<p class="err" id="q-err" role="alert" hidden>Введите имя, чтобы специалист знал, как к вам обращаться.</p>' +
         '<button class="btn" type="submit">Подготовить ответы</button>';
       root.append(form);
@@ -628,9 +628,17 @@ html{scroll-behavior:auto}
       form.addEventListener('submit', function (ev) {
         ev.preventDefault();
         var n = nameInput.value.trim();
+        var c = contactInput.value.trim();
         if (!n) {
+          err.textContent = 'Введите имя, чтобы специалист знал, как к вам обращаться.';
           err.hidden = false;
           nameInput.focus();
+          return;
+        }
+        if (c.replace(/[\s\-().]/g, '').length < 5) {
+          err.textContent = 'Укажите телефон или ник в мессенджере, иначе специалист не сможет с вами связаться.';
+          err.hidden = false;
+          contactInput.focus();
           return;
         }
         state.name = n.slice(0, 80);
