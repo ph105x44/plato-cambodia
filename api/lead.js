@@ -110,6 +110,8 @@ module.exports = async (req, res) => {
     if (a && a.q) lines.push(`${clean(a.q, 60)}: ${clean(a.a, 120) || 'не указано'}`);
   });
   lines.push('', `Имя: ${name}`, `Контакт: ${contact}`);
+  if (b.channel) lines.push(`Удобный способ связи: ${clean(b.channel, 40)}`);
+  if (b.location) lines.push(`Интересующий район: ${clean(b.location, 80)}`);
   lines.push(`Согласие на обработку персональных данных: дано, ${new Date().toISOString()}`);
   const utm = b.utm && typeof b.utm === 'object' ? b.utm : {};
   const utmLine = Object.keys(utm).slice(0, 12).map((k) => `${clean(k, 30)}=${clean(utm[k], 100)}`).join(', ');
