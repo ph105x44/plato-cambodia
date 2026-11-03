@@ -6,6 +6,9 @@
 //   AMO_DOMAIN       - "amocrm.ru" (default) or "kommo.com"
 //   AMO_PIPELINE_ID  - numeric pipeline id (otherwise the default pipeline is used)
 //   AMO_STATUS_ID    - numeric status id inside that pipeline
+//   RESEND_API_KEY   - key from resend.com; when set, every lead is also e-mailed
+//   LEAD_EMAIL_TO    - recipients, comma separated (default ph105x44@gmail.com)
+//   LEAD_EMAIL_FROM  - sender, default "Plato Estate <onboarding@resend.dev>"
 //   CAPTCHA_PROVIDER - "smartcaptcha" or "turnstile" (leave empty to skip the captcha check)
 //   CAPTCHA_SECRET   - server secret of the chosen captcha
 
@@ -52,6 +55,30 @@ async function captchaOk(token, ip) {
     return false;
   }
   return false;
+}
+
+
+async function sendEmail(subject, text) {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return false;
+  const to = (process.env.LEAD_EMAIL_TO || 'ph105x44@gmail.com').split(',').map((x) => x.trim()).filter(Boolean);
+  try {
+    const r = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: process.env.LEAD_EMAIL_FROM || 'Plato Estate <onboarding@resend.dev>',
+        to,
+        subject,
+        text,
+      }),
+    });
+    if (!r.ok) console.error('email failed', r.status, await r.text().catch(() => ''));
+    return r.ok;
+  } catch (e) {
+    console.error('email failed', e.message);
+    return false;
+  }
 }
 
 async function amo(path, method, body) {
@@ -131,8 +158,11 @@ module.exports = async (req, res) => {
   if (process.env.AMO_PIPELINE_ID) lead.pipeline_id = Number(process.env.AMO_PIPELINE_ID);
   if (process.env.AMO_STATUS_ID) lead.status_id = Number(process.env.AMO_STATUS_ID);
 
+  const emailPromise = sendEmail(`Новая заявка: ${name}`, lines.join('\n'));
+  let crmOk = false;
   try {
     const created = await amo('/api/v4/leads/complex', 'POST', [lead]);
+    crmOk = true;
     const id = created && created[0] && created[0].id;
     if (id) {
       try {
@@ -141,9 +171,10 @@ module.exports = async (req, res) => {
         console.error('amo note failed', e.message, e.detail);
       }
     }
-    return res.status(200).json({ ok: true });
   } catch (e) {
     console.error('amo lead failed', e.message, e.detail);
-    return res.status(502).json({ ok: false, error: 'crm' });
   }
+  const emailOk = await emailPromise;
+  if (crmOk || emailOk) return res.status(200).json({ ok: true });
+  return res.status(502).json({ ok: false, error: 'crm' });
 };
