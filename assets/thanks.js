@@ -14,5 +14,6 @@
   if (sent) {
     try { sessionStorage.removeItem('platoLead'); } catch (e) {}
     if (typeof window.ym === 'function' && window.PLATO_METRIKA_ID) window.ym(window.PLATO_METRIKA_ID, 'reachGoal', 'lead_sent');
+    if (window._tmr) window._tmr.push({type: 'reachGoal', id: 'lead_sent'});
   }
 })();
