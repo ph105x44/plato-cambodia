@@ -6,6 +6,8 @@
 //   AMO_DOMAIN       - "amocrm.ru" (default) or "kommo.com"
 //   AMO_PIPELINE_ID  - numeric pipeline id (otherwise the default pipeline is used)
 //   AMO_STATUS_ID    - numeric status id inside that pipeline
+//   AMO_RESPONSIBLE_ID   - numeric amoCRM user id to assign every new lead to
+//   AMO_RESPONSIBLE_NAME - or a name to look up among amoCRM users (default "Евгений"); used only if it matches exactly one user
 //   RESEND_API_KEY   - key from resend.com; when set, every lead is also e-mailed
 //   LEAD_EMAIL_TO    - recipients, comma separated (default ph105x44@gmail.com)
 //   LEAD_EMAIL_FROM  - sender, default "Plato Estate <onboarding@resend.dev>"
@@ -86,7 +88,7 @@ async function amo(path, method, body) {
   const r = await fetch(`https://${process.env.AMO_SUBDOMAIN}.${domain}${path}`, {
     method,
     headers: { Authorization: `Bearer ${process.env.AMO_TOKEN}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+    body: body === undefined ? undefined : JSON.stringify(body),
   });
   const text = await r.text();
   let json = null;
@@ -97,6 +99,23 @@ async function amo(path, method, body) {
     throw err;
   }
   return json;
+}
+
+let responsibleCache = null;
+async function resolveResponsible() {
+  if (process.env.AMO_RESPONSIBLE_ID) return Number(process.env.AMO_RESPONSIBLE_ID);
+  if (responsibleCache) return responsibleCache;
+  const wanted = (process.env.AMO_RESPONSIBLE_NAME || 'Евгений').trim().toLowerCase();
+  try {
+    const data = await amo('/api/v4/users?limit=250', 'GET');
+    const users = (data && data._embedded && data._embedded.users) || [];
+    const found = users.filter((u) => (u.name || '').toLowerCase().includes(wanted));
+    if (found.length === 1) { responsibleCache = found[0].id; return responsibleCache; }
+    console.error('amo responsible: expected 1 match for', wanted, 'got', found.map((u) => `${u.id}:${u.name}`).join(', ') || 'none');
+  } catch (e) {
+    console.error('amo responsible lookup failed', e.message, e.detail);
+  }
+  return null;
 }
 
 module.exports = async (req, res) => {
@@ -155,6 +174,11 @@ module.exports = async (req, res) => {
     name: `Заявка с сайта: ${name}`,
     _embedded: { contacts: [contactEntity], tags: [{ name: 'Камбоджа лендинг' }] },
   };
+  const responsibleId = await resolveResponsible();
+  if (responsibleId) {
+    lead.responsible_user_id = responsibleId;
+    contactEntity.responsible_user_id = responsibleId;
+  }
   if (process.env.AMO_PIPELINE_ID) lead.pipeline_id = Number(process.env.AMO_PIPELINE_ID);
   if (process.env.AMO_STATUS_ID) lead.status_id = Number(process.env.AMO_STATUS_ID);
 
