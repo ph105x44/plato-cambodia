@@ -295,7 +295,8 @@
           elapsed: Date.now() - (state.formAt || Date.now()),
           answers: Q.map(function (qq, idx) { return { q: qq.label, a: state.answers[idx] || '' }; }),
           utm: utm,
-          referrer: document.referrer || ''
+          referrer: document.referrer || '',
+          tz: (function () { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) { return ''; } })()
         };
         var finish = function (ok) {
           if (ok) {

@@ -101,6 +101,20 @@ async function amo(path, method, body) {
   return json;
 }
 
+// Approximate location from Vercel geo-IP headers and the browser time zone.
+function safeDecode(v) { try { return decodeURIComponent(v); } catch (e) { return v; } }
+function tzInfo(zone) {
+  if (!zone || typeof zone !== 'string' || zone.length > 64) return null;
+  try {
+    const now = new Date();
+    const time = new Intl.DateTimeFormat('ru-RU', { timeZone: zone, hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' }).format(now);
+    const off = new Intl.DateTimeFormat('en-US', { timeZone: zone, timeZoneName: 'shortOffset' }).formatToParts(now)
+      .find((p) => p.type === 'timeZoneName');
+    const utm = off ? off.value.replace('GMT', 'UTC') : '';
+    return { zone, time, utc: utm === 'UTC' ? 'UTC+0' : utm };
+  } catch (e) { return null; }
+}
+
 let responsibleCache = null;
 async function resolveResponsible() {
   if (process.env.AMO_RESPONSIBLE_ID) return Number(process.env.AMO_RESPONSIBLE_ID);
@@ -150,6 +164,14 @@ module.exports = async (req, res) => {
     return res.status(403).json({ ok: false, error: 'captcha' });
   }
 
+  const h = req.headers;
+  const ipCity = clean(safeDecode(h['x-vercel-ip-city'] || ''), 60);
+  const ipRegion = clean(safeDecode(h['x-vercel-ip-country-region'] || ''), 20);
+  const ipCountry = clean(h['x-vercel-ip-country'] || '', 4);
+  const ipTz = tzInfo(clean(h['x-vercel-ip-timezone'] || '', 64));
+  const devTz = tzInfo(clean(b.tz, 64));
+  const clientTz = devTz || ipTz;
+
   const answers = Array.isArray(b.answers) ? b.answers.slice(0, 10) : [];
   const lines = ['Заявка с лендинга «Недвижимость Камбоджи»', ''];
   answers.forEach((a) => {
@@ -158,6 +180,10 @@ module.exports = async (req, res) => {
   lines.push('', `Имя: ${name}`, `Контакт: ${contact}`);
   if (b.channel) lines.push(`Удобный способ связи: ${clean(b.channel, 40)}`);
   if (b.location) lines.push(`Интересующий район: ${clean(b.location, 80)}`);
+  const place = [ipCity, ipCountry].filter(Boolean).join(', ');
+  if (place) lines.push(`Город клиента (по IP): ${place}${ipRegion && ipCity ? ' (' + ipRegion + ')' : ''}`);
+  if (clientTz) lines.push(`Часовой пояс клиента: ${clientTz.zone} (${clientTz.utc}), сейчас у клиента ${clientTz.time}`);
+  if (ipTz && devTz && ipTz.zone !== devTz.zone) lines.push(`Часовой пояс по IP: ${ipTz.zone} (${ipTz.utc}); по устройству: ${devTz.zone}. Возможно, включён VPN`);
   lines.push(`Согласие на обработку персональных данных: дано, ${new Date().toISOString()}`);
   const utm = b.utm && typeof b.utm === 'object' ? b.utm : {};
   const utmLine = Object.keys(utm).slice(0, 12).map((k) => `${clean(k, 30)}=${clean(utm[k], 100)}`).join(', ');
@@ -174,6 +200,8 @@ module.exports = async (req, res) => {
     name: `Заявка с сайта: ${name}`,
     _embedded: { contacts: [contactEntity], tags: [{ name: 'Камбоджа лендинг' }] },
   };
+  if (clientTz && clientTz.utc) lead._embedded.tags.push({ name: clientTz.utc });
+  if (ipCity) lead._embedded.tags.push({ name: ipCity });
   const responsibleId = await resolveResponsible();
   if (responsibleId) {
     lead.responsible_user_id = responsibleId;
