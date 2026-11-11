@@ -200,6 +200,16 @@ module.exports = async (req, res) => {
     name: `Заявка с сайта: ${name}`,
     _embedded: { contacts: [contactEntity], tags: [{ name: 'Камбоджа лендинг' }] },
   };
+  // Источник трафика: теги и строка в примечании (заявки из лид-форм ВК приходят отдельной интеграцией с тегами new_vk, vk_ads)
+  const src = String(utm.utm_source || '').toLowerCase();
+  const ref = String(b.referrer || '').toLowerCase();
+  let sourceTags = [];
+  if (/yandex|yadirect|ya_direct|^ya$/.test(src) || utm.yclid || utm.ysclid) sourceTags = ['yandex', 'rsya'];
+  else if (/(^|[^a-z])vk|vkontakte|mytarget/.test(src)) sourceTags = ['vk_website'];
+  else if (!src && /yandex\./.test(ref)) sourceTags = ['yandex'];
+  else if (!src && /(^|[/.])vk\.com|away\.vk/.test(ref)) sourceTags = ['vk_website'];
+  sourceTags.forEach((t) => lead._embedded.tags.push({ name: t }));
+  lines.push(`Источник заявки: ${sourceTags.length ? sourceTags.join(', ') : 'не определён (нет UTM-меток)'}`);
   if (clientTz && clientTz.utc) lead._embedded.tags.push({ name: clientTz.utc });
   if (ipCity) lead._embedded.tags.push({ name: ipCity });
   const responsibleId = await resolveResponsible();
