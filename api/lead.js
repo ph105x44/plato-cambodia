@@ -11,6 +11,9 @@
 //   RESEND_API_KEY   - key from resend.com; when set, every lead is also e-mailed
 //   LEAD_EMAIL_TO    - recipients, comma separated (default ph105x44@gmail.com)
 //   LEAD_EMAIL_FROM  - sender, default "Plato Estate <onboarding@resend.dev>"
+//   TELEGRAM_BOT_TOKEN - token of a bot from @BotFather; with TELEGRAM_CHAT_ID every lead is also posted to a Telegram group
+//   TELEGRAM_CHAT_ID   - id of the group (negative number, e.g. -1001234567890)
+//   TELEGRAM_THREAD_ID - optional topic id if the group has topics
 //   CAPTCHA_PROVIDER - "smartcaptcha" or "turnstile" (leave empty to skip the captcha check)
 //   CAPTCHA_SECRET   - server secret of the chosen captcha
 
@@ -79,6 +82,26 @@ async function sendEmail(subject, text) {
     return r.ok;
   } catch (e) {
     console.error('email failed', e.message);
+    return false;
+  }
+}
+
+async function sendTelegram(text) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chat = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !chat) return false;
+  const body = { chat_id: chat, text: text.slice(0, 4000), disable_web_page_preview: true };
+  if (process.env.TELEGRAM_THREAD_ID) body.message_thread_id = Number(process.env.TELEGRAM_THREAD_ID);
+  try {
+    const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!r.ok) console.error('telegram failed', r.status, await r.text().catch(() => ''));
+    return r.ok;
+  } catch (e) {
+    console.error('telegram failed', e.message);
     return false;
   }
 }
@@ -222,10 +245,12 @@ module.exports = async (req, res) => {
 
   const emailPromise = sendEmail(`Новая заявка: ${name}`, lines.join('\n'));
   let crmOk = false;
+  let leadId = null;
   try {
     const created = await amo('/api/v4/leads/complex', 'POST', [lead]);
     crmOk = true;
     const id = created && created[0] && created[0].id;
+    leadId = id || null;
     if (id) {
       try {
         await amo(`/api/v4/leads/${id}/notes`, 'POST', [{ note_type: 'common', params: { text: lines.join('\n') } }]);
@@ -236,7 +261,9 @@ module.exports = async (req, res) => {
   } catch (e) {
     console.error('amo lead failed', e.message, e.detail);
   }
+  const amoLink = leadId && process.env.AMO_SUBDOMAIN ? `\n\nСделка в amoCRM: https://${process.env.AMO_SUBDOMAIN}.amocrm.ru/leads/detail/${leadId}` : '';
+  const tgOk = await sendTelegram('🔔 Новая заявка с сайта\n\n' + lines.join('\n') + amoLink);
   const emailOk = await emailPromise;
-  if (crmOk || emailOk) return res.status(200).json({ ok: true });
+  if (crmOk || emailOk || tgOk) return res.status(200).json({ ok: true });
   return res.status(502).json({ ok: false, error: 'crm' });
 };
